@@ -1,7 +1,8 @@
 export default function Page() {
-  return (
-    <div dangerouslySetInnerHTML={{ __html: `
-     <!DOCTYPE html>
+    return (
+        <div dangerouslySetInnerHTML={{
+            __html: `
+      <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -628,5 +629,5 @@ export default function Page() {
 </body>
 </html>
     ` }} />
-  );
+    );
 }
