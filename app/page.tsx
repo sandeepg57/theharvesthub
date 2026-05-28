@@ -1202,4 +1202,265 @@ export default function Page() {
 </html>
     ` }} />
   );
-}
+}'use client';
+
+import React, { useEffect } from 'react';
+
+export default function Page() {
+  useEffect(() => {
+    // Dynamically load Lucide icons once the component mounts in the browser
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/lucide@latest';
+    script.async = true;
+    script.onload = () => {
+      // @ts-ignore
+      if (window.lucide) {
+        // @ts-ignore
+        window.lucide.createIcons();
+      }
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  // UI interaction handlers mapped from the design build
+  const toggleMenu = () => {
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (mobileMenu) mobileMenu.classList.toggle('hidden');
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const selectProductAndScroll = (productValue: string) => {
+    const dropdown = document.getElementById('productInterest') as HTMLSelectElement;
+    if (dropdown) {
+      dropdown.value = productValue;
+    }
+    scrollToSection('contact');
+  };
+
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const messageDiv = document.getElementById('formMessage');
+    if (!messageDiv) return;
+
+    const companyName = (document.getElementById('companyName') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('email') as HTMLInputElement).value.trim();
+    const productInterest = (document.getElementById('productInterest') as HTMLSelectElement).value;
+    const volume = (document.getElementById('volume') as HTMLInputElement).value;
+    const destinationPort = (document.getElementById('destinationPort') as HTMLInputElement).value.trim();
+
+    if (!companyName || !email || !productInterest || !volume || !destinationPort) {
+      messageDiv.className = 'mt-4 p-4 rounded-xl text-center block bg-red-100 text-red-800 border border-red-200';
+      messageDiv.textContent = 'Please fill in all required fields.';
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      messageDiv.className = 'mt-4 p-4 rounded-xl text-center block bg-red-100 text-red-800 border border-red-200';
+      messageDiv.textContent = 'Please enter a valid business email address.';
+      return;
+    }
+
+    // Direct logging output for lead verification
+    console.log('B2B Lead Sourcing Specs Verified:', {
+      company: companyName,
+      email: email,
+      product: productInterest,
+      volume: volume + ' MT',
+      port: destinationPort,
+      timestamp: new Date().toISOString()
+    });
+
+    messageDiv.className = 'mt-4 p-4 rounded-xl text-center block bg-emerald-100 text-emerald-800 border border-emerald-200';
+    messageDiv.textContent = 'Thank you! Your quote request has been received. Our trade desk will contact you within 12 business hours.';
+
+    form.reset();
+
+    setTimeout(() => {
+      messageDiv.className = 'hidden mt-4 p-4 rounded-xl text-center';
+    }, 6000);
+  };
+
+  return (
+    <>
+      {/* Dynamic Head Injectors for Tailwind CSS v4 and Google Fonts */}
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" />
+      <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background-color: #FDFDFB; color: #1e293b; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .bg-agri-green { background-color: #0B4624; }
+        .text-agri-green { color: #0B4624; }
+        .border-agri-green { border-color: #0B4624; }
+        .bg-chili-red { background-color: #C82217; }
+        .text-chili-red { color: #C82217; }
+        .hover\\:bg-agri-green-dark:hover { background-color: #062B15; }
+        .hover\\:bg-chili-red-dark:hover { background-color: #A3180F; }
+      `}} />
+
+      <div class="bg-[#FDFDFB] text-slate-800 antialiased selection:bg-red-600 selection:text-white">
+        
+        {/* Top Info Bar */}
+        <div class="bg-emerald-950 text-emerald-100/80 text-xs py-2 px-4 sm:px-6 lg:px-8 border-b border-emerald-900/50">
+          <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center gap-4">
+              <span class="flex items-center gap-1"><i data-lucide="globe" class="w-3.5 h-3.5 text-red-500"></i> Global B2B Supply Chain</span>
+              <span class="hidden md:inline-flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i> APEDA & Spices Board Compliant</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <a href="mailto:business@harvesthub.in" class="hover:text-white transition flex items-center gap-1"><i data-lucide="mail" class="w-3.5 h-3.5"></i> business@harvesthub.in</a>
+              <span class="text-emerald-800">|</span>
+              <span class="flex items-center gap-1"><i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i> SGS / Geo-Chem Certified Quality</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-xs">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="bg-agri-green text-white p-2.5 rounded-xl shadow-md shadow-emerald-900/10">
+                <i data-lucide="sprout" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <span class="text-xl font-extrabold tracking-tight text-emerald-950 block leading-tight">THE HARVEST HUB</span>
+                <span class="text-[10px] font-bold tracking-widest text-chili-red uppercase block">Premium Agri Exports</span>
+              </div>
+            </div>
+            
+            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+              <a href="#about" class="hover:text-agri-green transition">About Us</a>
+              <a href="#products" class="hover:text-chili-red transition">Our Products</a>
+              <a href="#quality" class="hover:text-agri-green transition">Quality Assurance</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+              <button onClick={() => scrollToSection('contact')} class="bg-chili-red text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm shadow-red-900/20 hover:bg-chili-red-dark transition duration-200 cursor-pointer">
+                Request Bulk Quote
+              </button>
+              <button onClick={toggleMenu} class="md:hidden text-slate-600 hover:text-emerald-950 focus:outline-hidden">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Navigation Dropdown Links */}
+          <div id="mobileMenu" class="hidden md:hidden bg-white border-b border-slate-100 px-4 pt-2 pb-4 space-y-3 shadow-md">
+            <a href="#about" onClick={toggleMenu} class="block text-sm font-semibold text-slate-600 hover:text-agri-green">About Us</a>
+            <a href="#products" onClick={toggleMenu} class="block text-sm font-semibold text-slate-600 hover:text-chili-red">Our Products</a>
+            <a href="#quality" onClick={toggleMenu} class="block text-sm font-semibold text-slate-600 hover:text-agri-green">Quality Assurance</a>
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <section class="relative bg-linear-to-b from-emerald-50/60 to-white pt-12 pb-20 md:py-28 overflow-hidden">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div class="lg:col-span-7 text-center lg:text-left space-y-6">
+                <div class="inline-flex items-center gap-2 bg-emerald-100/80 border border-emerald-200/60 px-3 py-1 rounded-full text-xs font-semibold text-emerald-900">
+                  <span class="w-2 x-2 h-2 rounded-full bg-chili-red animate-pulse"></span> Direct From Origin: India
+                </div>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-emerald-950 leading-tight">
+                  Premium Indian Spices & Oilseeds <span class="text-chili-red">Delivered Globally.</span>
+                </h1>
+                <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                  The Harvest Hub connects global B2B commodity buyers directly with India's most trusted agricultural producers. We supply authentic, premium-grade dry red chillies and high-yield groundnuts with guaranteed quality standards and flawless port-to-port logistics.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+                  <button onClick={() => scrollToSection('contact')} class="w-full sm:w-auto bg-agri-green text-white text-center font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-emerald-900/20 hover:bg-agri-green-dark transition duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                    <i data-lucide="file-text" class="w-4 h-4"></i> Request a Quote
+                  </button>
+                  <button onClick={() => scrollToSection('products')} class="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 text-center font-bold px-8 py-3.5 rounded-xl hover:bg-slate-50 transition flex items-center justify-center gap-2 cursor-pointer">
+                    Explore Catalog <i data-lucide="arrow-down" class="w-4 h-4 text-slate-400"></i>
+                  </button>
+                </div>
+                
+                {/* B2B Trust Badges */}
+                <div class="pt-8 border-t border-slate-200/80 grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
+                  <div>
+                    <span class="block text-2xl font-extrabold text-emerald-950">100%</span>
+                    <span class="text-xs font-medium text-slate-500">Farmer Sourced</span>
+                  </div>
+                  <div>
+                    <span class="block text-2xl font-extrabold text-emerald-950">&lt; 10%</span>
+                    <span class="text-xs font-medium text-slate-500">Moisture Guard</span>
+                  </div>
+                  <div>
+                    <span class="block text-2xl font-extrabold text-emerald-950">ISO Certified</span>
+                    <span class="text-xs font-medium text-slate-500">Processing Facilities</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Hero Visual Elements */}
+              <div class="lg:col-span-5 relative flex justify-center">
+                <div class="w-full max-w-[420px] aspect-square rounded-2xl bg-linear-to-tr from-emerald-800 to-emerald-600 shadow-2xl relative flex flex-col justify-between p-8 text-white overflow-hidden group">
+                  <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent)]"></div>
+                  <div class="flex justify-between items-start z-10">
+                    <div class="bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10">
+                      <i data-lucide="ship" class="w-6 h-6 text-emerald-300"></i>
+                    </div>
+                    <span class="bg-chili-red font-bold text-xs tracking-wider uppercase px-3 py-1 rounded-full border border-white/20 shadow-sm">Container Ready</span>
+                  </div>
+                  <div class="space-y-3 z-10">
+                    <span class="text-emerald-300 text-xs font-bold tracking-widest uppercase block">Export Logistics</span>
+                    <h3 class="text-2xl font-extrabold tracking-tight leading-tight">FOB & CIF Shipping to Any Major Global Port</h3>
+                    <p class="text-white/80 text-xs leading-relaxed">Rigorous containerization, customized multi-layer moisture barrier packaging, and rapid export compliance handling across major international shipping channels.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* About Section */}
+        <section id="about" class="py-20 border-t border-slate-100 bg-white">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto space-y-4 mb-16">
+              <span class="text-xs font-bold tracking-widest text-agri-green uppercase">Farm-To-Port Excellence</span>
+              <h2 class="text-3xl sm:text-4xl font-extrabold text-emerald-950 tracking-tight">The Sustainable Sourcing Hub</h2>
+              <p class="text-slate-600">The Harvest Hub connects global B2B commodity buyers directly with India's most trusted agricultural producers. Our vertically integrated supply chain ensures transparency, quality, and reliability at every step.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-100 text-agri-green flex items-center justify-center"><i data-lucide="users" class="w-6 h-6"></i></div>
+                <h3 class="text-lg font-bold text-emerald-950">Ethical Sourcing</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">Direct farmer alliances ensuring optimal freshness, absolute traceability, and competitive bulk pricing architectures.</p>
+              </div>
+              <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-4">
+                <div class="w-12 h-12 rounded-xl bg-red-100 text-chili-red flex items-center justify-center"><i data-lucide="shield-check" class="w-6 h-6"></i></div>
+                <h3 class="text-lg font-bold text-emerald-950">Advanced Testing</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">Advanced processing layout supporting rigorous moisture management, color sorting, and multi-tier lab grading.</p>
+              </div>
+              <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-4">
+                <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center"><i data-lucide="package" class="w-6 h-6"></i></div>
+                <h3 class="text-lg font-bold text-emerald-950">Complete Compliance</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">Flawless documentation workflows fulfilling strict international standards across custom clearances and destination markets.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Product Catalog Container */}
+        <section id="products" class="py-20 bg-slate-50 border-y border-slate-100">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center space-y-2 mb-12">
+              <span class="text-xs font-bold tracking-widest text-chili-red uppercase">Premium Catalog</span>
+              <h2 class="text-3xl font-extrabold text-emerald-950 tracking-tight">Our Export Commodities</h2>
+            </div>
+
+            {/* Dry Red Chillies Subsection
